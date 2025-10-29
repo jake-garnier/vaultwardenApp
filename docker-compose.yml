@@ -8,6 +8,8 @@ services:
       - DOMAIN=http://192.168.1.216
       - SIGNUPS_ALLOWED=true
       - WEB_VAULT_ENABLED=true
+      - WEBSOCKET_ENABLED=false
+      - LOG_LEVEL=debug
     volumes:
       - ./vw-data:/data
     ports:
