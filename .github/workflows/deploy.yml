@@ -1,0 +1,41 @@
+name: Deploy Vaultwarden to Homelab
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create data directory
+        run: mkdir -p vw-data
+
+      - name: Stop existing containers
+        run: |
+          docker-compose down || true
+
+      - name: Deploy Vaultwarden
+        run: |
+          docker-compose pull
+          docker-compose up -d --build
+
+      - name: Wait for service to be ready
+        run: |
+          echo "Waiting for Vaultwarden to start..."
+          sleep 30
+
+      - name: Check deployment health
+        run: |
+          curl -f http://localhost:80 || exit 1
+          echo "Vaultwarden is running successfully!"
+
+      - name: Display container logs
+        if: always()
+        run: |
+          docker-compose logs --tail=50
